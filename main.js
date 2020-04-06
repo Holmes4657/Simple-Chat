@@ -7,12 +7,27 @@ class Message {
     }
 }
 
+let WS;
+
+//Connect to WS
+function connectWS() {
+    ws = new WebSocket('ws://WebSocket');
+
+    ws.onmessage = (request) => {
+        const message = JSON.parse(request.data);
+        addMessage(message);
+    }
+}
+
+connectWS();
+
 function sendMessage() {
     const name = document.querySelector('#name').value;
     const messageInput = document.querySelector('#message');
     const message = new Message(name, messageInput.value);
     messageInput.value = '';
-    addMessage(message);
+    ws.send(JSON.stringify(message));
+    // addMessage(message);
 }
 
 function addMessage(message) {
@@ -38,6 +53,13 @@ function addMessage(message) {
     messageBlock.appendChild(date);
 
     messagesArea.appendChild(messageBlock);
+
+    scrollToBottom();
+}
+
+function scrollToBottom() {
+    const messagesArea = document.querySelector('.messages');
+    messagesArea.scrollTo(0, 100000);
 }
 
 document.querySelector('#send')
